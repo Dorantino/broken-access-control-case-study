@@ -1,41 +1,49 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { claims } from "@/lib/data";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { users, claims } from "@/lib/data";
 
-export default function Dashboard() {
-    const [user, setUser] = useState<any>(null);
-    const router = useRouter();
+export default async function Dashboard() {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session");
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            router.push("/");
-        }
-    }, []);
+    // 🔐 Must be logged in
+    if (!session) {
+        redirect("/");
+    }
 
-    if (!user) return null;
+    // 🔎 Find logged in user
+    const user = users.find(
+        (u) => u.username === session.value
+    );
 
-    const userClaims = claims.filter((c) => c.userId === user.id);
+    if (!user) {
+        redirect("/");
+    }
+
+    // 🔐 Ownership enforcement
+    const userClaims =
+        user.role === "admin"
+            ? claims
+            : claims.filter((c) => c.userId === user.id);
 
     return (
         <div className="min-h-screen bg-slate-900 p-8">
             <div className="max-w-3xl mx-auto bg-slate-800 shadow-xl rounded-2xl p-8">
-                <h1 className="text-3xl font-bold mb-4 text-slate-800">
+                <h1 className="text-3xl font-bold mb-4 text-white">
                     Dashboard
                 </h1>
 
-                <p className="mb-2 text-amber-500 text-3xl">
-                    Welcome <span className="font-semibold">{user.username}</span>
+                <p className="mb-2 text-amber-400 text-2xl">
+                    Welcome{" "}
+                    <span className="font-semibold">
+                        {user.username}
+                    </span>
                 </p>
 
-                <p className="mb-6">
+                <p className="mb-6 text-white">
                     Role:
-                    <span className="ml-2 bg-slate-200 px-3 py-1 rounded-lg text-sm text-slate-600">
+                    <span className="ml-2 bg-slate-700 px-3 py-1 rounded-lg text-sm text-white">
                         {user.role}
                     </span>
                 </p>
@@ -49,7 +57,7 @@ export default function Dashboard() {
                     </Link>
                 )}
 
-                <h2 className="text-xl font-semibold mb-4 ">
+                <h2 className="text-xl font-semibold mb-4 text-white">
                     Your Claims
                 </h2>
 
@@ -58,7 +66,7 @@ export default function Dashboard() {
                         <Link
                             key={claim.id}
                             href={`/claims/${claim.id}`}
-                            className="block p-4 border border-slate-200 rounded-lg hover:bg-amber-500 transition"
+                            className="block p-4 border border-slate-600 rounded-lg hover:bg-slate-700 transition text-white"
                         >
                             {claim.title}
                         </Link>

@@ -6,16 +6,34 @@ import { useParams } from "next/navigation";
 export default function ClaimPage() {
     const { id } = useParams();
     const [claim, setClaim] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetch(`/api/claims/${id}`)
-            .then((res) => res.json())
-            .then((data) => setClaim(data));
+            .then(async (res) => {
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || "Error");
+                }
+
+                return data;
+            })
+            .then((data) => setClaim(data))
+            .catch((err) => setError(err.message));
     }, [id]);
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-white">
+                <p>{error}</p>
+            </div>
+        );
+    }
 
     if (!claim) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center text-white">
                 <p>Loading...</p>
             </div>
         );

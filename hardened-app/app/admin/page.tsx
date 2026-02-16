@@ -1,25 +1,21 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { users } from "@/lib/data";
 
-import { useEffect, useState } from "react";
+export default async function Admin() {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session");
 
-export default function Admin() {
-    const [user, setUser] = useState<any>(null);
+    if (!session) {
+        redirect("/");
+    }
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
+    const user = users.find(
+        (u) => u.username === session.value
+    );
 
     if (!user || user.role !== "admin") {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-100">
-                <p className="text-red-600 text-lg font-semibold">
-                    Access Denied
-                </p>
-            </div>
-        );
+        redirect("/dashboard");
     }
 
     return (

@@ -2,20 +2,22 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { users } from "@/lib/data";
 
 export default function Home() {
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLogin = () => {
-        const foundUser = users.find(
-            (u) => u.username === username && u.password === password
-        );
+    const handleLogin = async () => {
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+        });
 
-        if (foundUser) {
-            localStorage.setItem("user", JSON.stringify(foundUser));
+        if (res.ok) {
             router.push("/dashboard");
         } else {
             alert("Invalid credentials");
