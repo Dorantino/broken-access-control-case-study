@@ -53,8 +53,7 @@ export default function Home() {
                 </button>
 
                 <p className="text-sm text-slate-400 mt-4 text-center">
-                    user1 / password123 <br />
-                    admin / admin123
+                    user1 / password123
                 </p>
             </div>
         </div>

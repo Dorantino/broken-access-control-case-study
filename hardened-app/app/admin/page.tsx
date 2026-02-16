@@ -1,17 +1,24 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { users } from "@/lib/data";
+import { verifySession } from "@/lib/session";
 
 export default async function Admin() {
     const cookieStore = await cookies();
     const session = cookieStore.get("session");
 
     if (!session) {
-        redirect("/");
+        redirect("/login");
+    }
+
+    const username = verifySession(session.value);
+
+    if (!username) {
+        redirect("/login");
     }
 
     const user = users.find(
-        (u) => u.username === session.value
+        (u) => u.username === username
     );
 
     if (!user || user.role !== "admin") {

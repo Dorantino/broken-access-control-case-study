@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { users, claims } from "@/lib/data";
+import { verifySession } from "@/lib/session";
 
 export default async function Dashboard() {
     const cookieStore = await cookies();
@@ -12,16 +13,23 @@ export default async function Dashboard() {
         redirect("/");
     }
 
-    // 🔎 Find logged in user
+    // Verify signed session
+    const username = verifySession(session.value);
+
+    if (!username) {
+        redirect("/");
+    }
+
+    // Find logged in user using VERIFIED username
     const user = users.find(
-        (u) => u.username === session.value
+        (u) => u.username === username
     );
 
     if (!user) {
         redirect("/");
     }
 
-    // 🔐 Ownership enforcement
+    // Ownership enforcement
     const userClaims =
         user.role === "admin"
             ? claims

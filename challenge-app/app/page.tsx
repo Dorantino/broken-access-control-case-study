@@ -2,57 +2,89 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { users } from "@/lib/data";
 
-export default function Home() {
+export default function LoginPage() {
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
-    const handleLogin = () => {
-        const foundUser = users.find(
-            (u) => u.username === username && u.password === password
-        );
+    async function handleLogin(e: React.FormEvent) {
+        e.preventDefault();
+        setError("");
 
-        if (foundUser) {
-            localStorage.setItem("user", JSON.stringify(foundUser));
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        if (res.ok) {
             router.push("/dashboard");
         } else {
-            alert("Invalid credentials");
+            setError("Invalid credentials");
         }
-    };
+    }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900">
-            <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-96 text-white">
-                <h1 className="text-2xl font-bold text-center mb-6">
-                    Broken Access Control Demo
-                </h1>
+        <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-6">
+            <div className="w-full max-w-sm">
+                <div className="mb-10">
+                    <h1 className="text-3xl font-semibold text-white tracking-tight">
+                        Executive Access
+                    </h1>
+                    <p className="text-neutral-400 text-sm mt-2">
+                        Internal authorization required
+                    </p>
+                </div>
 
-                <input
-                    type="text"
-                    placeholder="Username"
-                    className="w-full mb-4 p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-
-                <input
-                    type="password"
-                    placeholder="Password"
-                    className="w-full mb-6 p-3 rounded-lg bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-
-                <button
-                    onClick={handleLogin}
-                    className="w-full bg-blue-600 p-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+                <form
+                    onSubmit={handleLogin}
+                    className="space-y-5"
                 >
-                    Login
-                </button>
+                    <div>
+                        <label className="block text-xs text-neutral-400 mb-2 uppercase tracking-wide">
+                            Username
+                        </label>
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="w-full bg-neutral-900 border border-neutral-800 rounded-md px-4 py-2 text-white focus:outline-none focus:border-white transition"
+                        />
+                    </div>
 
-                <p className="text-sm text-slate-400 mt-4 text-center">
-                    user1 / password123 <br />
-                    admin / admin123
+                    <div>
+                        <label className="block text-xs text-neutral-400 mb-2 uppercase tracking-wide">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-neutral-900 border border-neutral-800 rounded-md px-4 py-2 text-white focus:outline-none focus:border-white transition"
+                        />
+                    </div>
+
+                    {error && (
+                        <p className="text-sm text-red-400">{error}</p>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="w-full bg-white text-black py-2 rounded-md font-medium hover:opacity-90 transition"
+                    >
+                        Sign In
+                    </button>
+                </form>
+
+                <div className="bg-black border border-neutral-800 rounded-2xl p-2 font-mono text-amber-50 text-sm mt-2"><p>username: user1</p>
+                    <p>password: password</p>
+                </div>
+
+
+                <p className="text-neutral-600 text-xs mt-10">
+                    Corporate Systems · Confidential
                 </p>
             </div>
         </div>

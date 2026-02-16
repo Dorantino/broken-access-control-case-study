@@ -1,6 +1,7 @@
 import { claims, users } from "@/lib/data";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { verifySession } from "@/lib/session";
 
 export async function GET(
     request: Request,
@@ -19,8 +20,18 @@ export async function GET(
         );
     }
 
+    // 🔐 VERIFY SIGNED SESSION
+    const username = verifySession(session.value);
+
+    if (!username) {
+        return NextResponse.json(
+            { error: "Invalid session" },
+            { status: 401 }
+        );
+    }
+
     const loggedInUser = users.find(
-        (u) => u.username === session.value
+        (u) => u.username === username
     );
 
     if (!loggedInUser) {

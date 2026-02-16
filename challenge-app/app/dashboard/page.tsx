@@ -1,69 +1,69 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { claims } from "@/lib/data";
+import { cookies } from "next/headers";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import Hints from "@/app/components/hints";
 
-export default function Dashboard() {
-    const [user, setUser] = useState<any>(null);
-    const router = useRouter();
+export default async function Dashboard() {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("session");
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            router.push("/");
-        }
-    }, []);
+    if (!sessionCookie) {
+        redirect("/login");
+    }
 
-    if (!user) return null;
-
-    const userClaims = claims.filter((c) => c.userId === user.id);
+    const session = JSON.parse(sessionCookie.value);
 
     return (
-        <div className="min-h-screen bg-slate-900 p-8">
-            <div className="max-w-3xl mx-auto bg-slate-800 shadow-xl rounded-2xl p-8">
-                <h1 className="text-3xl font-bold mb-4 text-slate-800">
-                    Dashboard
-                </h1>
+        <div className="min-h-screen bg-neutral-950 text-white px-6 py-12">
+            <div className="max-w-3xl mx-auto">
 
-                <p className="mb-2 text-amber-500 text-3xl">
-                    Welcome <span className="font-semibold">{user.username}</span>
-                </p>
+                <div className="flex justify-between items-center mb-12">
+                    <div>
+                        <h1 className="text-3xl font-semibold tracking-tight">
+                            {session.role === "admin"
+                                ? "Admin Dashboard"
+                                : "User Dashboard"}
+                        </h1>
+                        <p className="text-neutral-400 text-sm mt-1">
+                            Internal Corporate System
+                        </p>
+                    </div>
 
-                <p className="mb-6">
-                    Role:
-                    <span className="ml-2 bg-slate-200 px-3 py-1 rounded-lg text-sm text-slate-600">
-                        {user.role}
-                    </span>
-                </p>
-
-                {user.role === "admin" && (
-                    <Link
-                        href="/admin"
-                        className="inline-block mb-6 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-                    >
-                        Go to Admin Panel
-                    </Link>
-                )}
-
-                <h2 className="text-xl font-semibold mb-4 ">
-                    Your Claims
-                </h2>
-
-                <div className="space-y-3">
-                    {userClaims.map((claim) => (
+                    {session.role === "admin" && (
                         <Link
-                            key={claim.id}
-                            href={`/claims/${claim.id}`}
-                            className="block p-4 border border-slate-200 rounded-lg hover:bg-amber-500 transition"
+                            href="/admin"
+                            className="border border-neutral-700 px-4 py-2 rounded-md text-sm hover:border-white transition"
                         >
-                            {claim.title}
+                            Admin Panel
                         </Link>
-                    ))}
+                    )}
                 </div>
+
+                <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 space-y-4">
+                    <div>
+                        <p className="text-xs text-neutral-500 uppercase tracking-wide">
+                            Username
+                        </p>
+                        <p className="text-lg">{session.username}</p>
+                    </div>
+
+                    <div>
+                        <p className="text-xs text-neutral-500 uppercase tracking-wide">
+                            Role
+                        </p>
+                        <p
+                            className={`text-lg ${session.role === "admin"
+                                ? "text-green-400"
+                                : "text-neutral-300"
+                                }`}
+                        >
+                            {session.role}
+                        </p>
+                    </div>
+                </div>
+
+                {session.role !== "admin" && <Hints />}
+
             </div>
         </div>
     );

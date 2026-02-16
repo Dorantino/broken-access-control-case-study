@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 
-export default async function AdminPage() {
+export default async function ApprovalPage() {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("session");
 
@@ -22,25 +21,23 @@ export default async function AdminPage() {
 
                 <div className="mb-12">
                     <h1 className="text-3xl font-semibold tracking-tight">
-                        Admin Panel
+                        Executive Approval Console
                     </h1>
                     <p className="text-neutral-400 text-sm mt-2">
-                        Restricted Administrative Controls
+                        Level 7 Clearance Required
                     </p>
                 </div>
 
-                <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-6">
-                    <p className="text-xs text-neutral-500 uppercase tracking-wide mb-4">
-                        Executive Controls
+                <div className="bg-neutral-900 border border-red-900 rounded-lg p-6">
+                    <p className="text-xs text-red-500 uppercase tracking-wide mb-4">
+                        Classified Authorization Code
                     </p>
 
-                    <Link
-                        href="/admin/approval"
-                        className="inline-block border border-neutral-700 px-4 py-2 rounded-md text-sm hover:border-white transition"
-                    >
-                        View Executive Approval
-                    </Link>
+                    <div className="bg-black border border-neutral-800 rounded-md p-4 font-mono text-green-400 text-sm">
+                        APPROVAL_CODE: BAC-LEVEL-7-COMPROMISED
+                    </div>
                 </div>
+
             </div>
         </div>
     );

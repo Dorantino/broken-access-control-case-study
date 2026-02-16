@@ -1,0 +1,10 @@
+Hint 1: Not everything you see in the interface represents actual access control.
+
+Hint 2: Inspect how the application determines your role.
+
+Hint 3: Where is your session stored?
+
+Hint 4: Can a user modify their own session data?
+
+Final Hint: Try becoming someone you’re not
+
