@@ -11,9 +11,7 @@ export default function Home() {
     const handleLogin = async () => {
         const res = await fetch("/api/login", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
         });
 
@@ -28,7 +26,7 @@ export default function Home() {
         <div className="min-h-screen flex items-center justify-center bg-slate-900">
             <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-96 text-white">
                 <h1 className="text-2xl font-bold text-center mb-6">
-                    Broken Access Control Demo
+                    Broken Access Control Demo(Hardened-version)
                 </h1>
 
                 <input

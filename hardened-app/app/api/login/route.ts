@@ -1,27 +1,32 @@
-import crypto from "crypto";
+import { createSession } from "@/lib/session";
+import { cookies } from "next/headers";
 
-const SECRET = "super_secret_key_change_this";
+export async function POST(req: Request) {
+    const { username, password } = await req.json();
 
-export function createSession(username: string) {
-    const signature = crypto
-        .createHmac("sha256", SECRET)
-        .update(username)
-        .digest("hex");
+    const users = [
+        { username: "user1", password: "password123", role: "user" },
+        { username: "admin", password: "admin123", role: "admin" },
+    ];
 
-    return `${username}.${signature}`;
-}
+    const user = users.find(
+        (u) => u.username === username && u.password === password
+    );
 
-export function verifySession(sessionValue: string) {
-    const [username, signature] = sessionValue.split(".");
+    if (!user) {
+        return new Response("Invalid credentials", { status: 401 });
+    }
 
-    if (!username || !signature) return null;
+    const session = createSession(user.username);
 
-    const expectedSignature = crypto
-        .createHmac("sha256", SECRET)
-        .update(username)
-        .digest("hex");
+    const cookieStore = await cookies();
 
-    if (signature !== expectedSignature) return null;
+    cookieStore.set("session", session, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false,
+    });
 
-    return username;
+
+    return new Response("Logged in");
 }

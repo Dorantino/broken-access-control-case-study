@@ -8,7 +8,7 @@ export default async function Dashboard() {
     const cookieStore = await cookies();
     const session = cookieStore.get("session");
 
-    // 🔐 Must be logged in
+    // Must be logged in
     if (!session) {
         redirect("/");
     }

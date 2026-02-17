@@ -26,7 +26,7 @@ export default function Home() {
         <div className="min-h-screen flex items-center justify-center bg-slate-900">
             <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-96 text-white">
                 <h1 className="text-2xl font-bold text-center mb-6">
-                    Broken Access Control Demo
+                    Broken Access Control Demo(Vulnerable-version)
                 </h1>
 
                 <input
