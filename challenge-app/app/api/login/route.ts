@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         );
     }
 
-    // 🚨 VULNERABLE SESSION (intentionally unsigned & forgeable)
+    // VULNERABLE SESSION (intentionally unsigned & forgeable)
     const cookieStore = await cookies();
 
     cookieStore.set(
